@@ -1,0 +1,4 @@
+click==8.1.7
+peewee==3.17.0
+prettytable @ git+https://github.com/jazzband/prettytable@46dcf554c8119fa90ed7368ec47d067591d1a990
+wcwidth==0.2.12
