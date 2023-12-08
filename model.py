@@ -18,17 +18,18 @@ class Employee(Model):
     @staticmethod
     def get_all():
         rows = Employee.select()
-        for row in rows:
-            print("first_name: {} last_name: {} birthday: {} national_code:{}".format(row.first_name, row.last_name,
-                                                                                      row.birthday,
-                                                                                      row.national_code))
+        # for row in rows:
+        #     print("first_name: {} last_name: {} birthday: {} national_code:{}".format(row.first_name, row.last_name,
+        #                                                                               row.birthday,
+        #                                                                               row.national_code))
         db.close()
+        return rows
 
     @staticmethod
     def search(**kwargs):
         rows = Employee.select().where()
 
     @staticmethod
-    def add(first_name, last_name,birthday, national_code):
+    def add(first_name, last_name, birthday, national_code):
         empolyee = Employee(first_name=first_name, last_name=last_name, birthday=birthday, national_code= national_code)
-        empolyee.save()
+        return empolyee.save()
