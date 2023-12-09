@@ -6,15 +6,7 @@ from validation import *
 
 
 def clear():
-    system('cls')
-    # pass
-    # # for windows
-    # if name == 'nt':
-    #     _ = system('cls')
-    #
-    # # for mac and linux(here, os.name is 'posix')
-    # else:
-    #     _ = system('clear')
+    system('clear')
 
 
 class MainMenu:
@@ -37,10 +29,10 @@ class MainMenu:
 
     def show_employee(self):
         result = Employee.get_all()
-        myTable = PrettyTable(self.employee_fields_name)
+        my_table = PrettyTable(self.employee_fields_name)
         for row in result:
-            myTable.add_row([row.first_name, row.last_name, row.birthday, row.national_code])
-        print(myTable)
+            my_table.add_row([row.first_name, row.last_name, row.birthday, row.national_code])
+        print(my_table)
         input("Press any key to continue...")
 
     def search_employee(self):
@@ -107,10 +99,6 @@ class AddEmployeeMenu:
         return True
 
     @staticmethod
-    def re_enter_info():
-        pass
-
-    @staticmethod
     def show_menu():
         print("1 - Submit")
         print("2 - Re-enter Information")
@@ -124,6 +112,14 @@ class AddEmployeeMenu:
         valid, error = NameValidator.validate(self.model.last_name)
         if not valid:
             errors['last_name'] = error
+
+        valid, error = BirthdayValidator.validate(self.model.birthday)
+        if not valid:
+            errors['birthday'] = error
+
+        valid, error = NationalCodeValidator.validate(self.model.national_code)
+        if not valid:
+            errors['national_code'] = error
 
         for field, error in errors.items():
             print(f'Validation Error, {field}: {error}')
@@ -141,3 +137,24 @@ class AddEmployeeMenu:
             if func:
                 if func():
                     return
+
+
+class Search:
+
+    def __int__(self):
+        self.menu = {
+            1: self.similar_search,
+            2: self.exactly_search
+
+        }
+
+    def similar_search(self, first_name):
+        pass
+
+    def exactly_search(self, national_code):
+        pass
+
+    @staticmethod
+    def show_menu():
+        print("1-similar_search: ")
+        print("2-exactly_search: ")
