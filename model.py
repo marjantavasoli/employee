@@ -39,15 +39,16 @@ class Employee(Model):
         employee = Employee.select().where(Employee.national_code == national_code)
         if employee:
             return employee
+
     @staticmethod
     def search_name(first_name):
-        employee = Employee.select().where(Employee.first_name % first_name)
+        employee = Employee.select().where(Employee.first_name.contains(first_name))
         if employee:
             return employee
 
-
-def delete_by_national_code(national_code):
-    if Employee.search_national_code(national_code=national_code):
-        q = Employee.delete().where(Employee.national_code == national_code)
-        q.execute()
-        return True
+    @staticmethod
+    def delete_by_national_code(national_code):
+        if Employee.search_national_code(national_code=national_code):
+            q = Employee.delete().where(Employee.national_code == national_code)
+            q.execute()
+            return True

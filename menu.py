@@ -36,15 +36,22 @@ class MainMenu:
 
     def show_employee(self):
         result = Employee.get_all()
-        my_table = PrettyTable(self.employee_fields_name)
-        for row in result:
-            my_table.add_row([row.first_name, row.last_name, row.birthday, row.national_code])
-        print(my_table)
+        self.print_employees(result)
         input("Press any key to continue...")
 
     @staticmethod
+    def print_employees(employees):
+        if employees:
+            my_table = PrettyTable(MainMenu.employee_fields_name)
+            for row in employees:
+                my_table.add_row([row.first_name, row.last_name, row.birthday, row.national_code])
+            print(my_table)
+        else:
+            print("does not exist")
+
+    @staticmethod
     def search_employee():
-        search_employee = SearchEmployee()
+        search_employee = SearchEmployeeMenu()
         search_employee.show()
 
     @staticmethod
@@ -54,11 +61,12 @@ class MainMenu:
         input("Press any key to continue...")
 
     def remind_birthday(self):
-        pass
+        birthday_menu = BirthdayMenu()
+        birthday_menu.show()
 
     @staticmethod
     def delete_employee():
-        delete_employee = DeleteEmployee()
+        delete_employee = DeleteEmployeeMenu()
         delete_employee.show()
         # input("Press any key to continue")
 
@@ -154,7 +162,7 @@ class AddEmployeeMenu:
                     return
 
 
-class SearchEmployee:
+class SearchEmployeeMenu:
 
     def __init__(self):
         self.menu = {
@@ -162,41 +170,28 @@ class SearchEmployee:
             2: self.search_by_national_code
 
         }
-    @staticmethod
-    def search_by_name(first_name):
-        employees = Employee.search_name(first_name)
-        if employees:
-            my_table = PrettyTable(["FirstName", "LastName", "Birthday", "NationalCode"])
-            for row in employees:
-                my_table.add_row([row.first_name, row.last_name, row.birthday, row.national_code])
-            print(my_table)
+
+    def search_by_name(self):
+        first_name = str(input("First Name: "))
+        valid, error = self.validate_first_name(first_name)
+        if valid:
+            employees = Employee.search_name(first_name)
+            MainMenu.print_employees(employees)
         else:
-            print("does not exist")
+            print(error)
         input("Press any key to continue...")
+        return True
 
-    @staticmethod
-    def search_by_national_code(national_code):
-        employees = Employee.search_national_code(national_code)
-        if employees:
-            my_table = PrettyTable(["FirstName", "LastName", "Birthday", "NationalCode"])
-            for row in employees:
-                my_table.add_row([row.first_name, row.last_name, row.birthday, row.national_code])
-            print(my_table)
+    def search_by_national_code(self):
+        national_code = str(input("National Code: "))
+        valid, error = self.validate_national_code(national_code)
+        if valid:
+            employees = Employee.search_national_code(national_code)
+            MainMenu.print_employees(employees)
         else:
-            print("not exist")
+            print(error)
         input("Press any key to continue...")
-
-    @staticmethod
-    def get_first_name():
-        print("Please enter first_name")
-        first_name = str(input("first_name: "))
-        return first_name
-
-    @staticmethod
-    def get_national_code():
-        print("Please enter national_code")
-        national_code = str(input("national_code: "))
-        return national_code
+        return True
 
     @staticmethod
     def validate_first_name(firstname):
@@ -216,37 +211,23 @@ class SearchEmployee:
 
     @staticmethod
     def show_menu():
-        print("1-search_by_name")
-        print("2-search_by_national_code")
-        print("3- Re-enter Information")
-        print("4- Cancel")
+        print("1- Search By Name")
+        print("2- Search By National Code")
+        print("3- Cancel")
 
     def show(self):
         while True:
             self.show_menu()
-            choice = int(input("enter your choice [1-4]: "))
+            choice = int(input("enter your choice [1-3]: "))
             func = self.menu.get(choice)
-            if choice == len(self.menu)+2:
+            if choice == len(self.menu) + 1:
                 return
-            if choice == 1:
-                first_name = self.get_first_name()
-                valid, error = self.validate_first_name(first_name)
-                if valid:
-                    return self.search_by_name(first_name)
-                else:
-                    print(error)
-
-            if choice == 2:
-                national_code = self.get_national_code()
-                valid, error = self.validate_national_code(national_code)
-                if valid:
-                    return self.search_by_national_code(national_code)
-                else:
-                    print(error)
+            if func:
+                if func():
+                    return
 
 
-
-class DeleteEmployee:
+class DeleteEmployeeMenu:
 
     def __init__(self):
         self.menu = {1: self.delete}
@@ -258,22 +239,21 @@ class DeleteEmployee:
             print("Are you sure ? ")
             choice = str(input("Enter Yes/No : "))
             if choice.lower() in ("yes" or "y"):
-                if delete_by_national_code(self.national_code):
+                if Employee.delete_by_national_code(self.national_code):
                     print("Successfully deleted.")
                 else:
                     print("does not exist.")
         else:
-            print('Cannot add to database, please re-enter information')
+            print('Cannot delete from database, please re-enter national code')
 
     @staticmethod
     def show_menu():
-        print("1- delete employee")
-        print("2- Re-enter Information")
-        print("3- cancel")
+        print("1- Delete Employee")
+        print("2- Re-enter National Code")
+        print("3- Cancel")
 
     def get_national_code(self):
-        print("Please enter national_code")
-        national_code = str(input("national_code: "))
+        national_code = str(input("National Code: "))
         self.national_code = national_code
 
     def validate(self):
@@ -290,25 +270,37 @@ class DeleteEmployee:
             self.show_menu()
             choice = int(input("enter your choice [1-3]: "))
             func = self.menu.get(choice)
-            if choice == len(self.menu)+2:
+            if choice == len(self.menu) + 2:
                 return
             if func:
                 func()
                 return
 
 
-class Birthday:
+class BirthdayMenu:
     def __init__(self):
-        self.menu = {1: self.calculate_birthday}
+        self.menu = {1: self.calculate_remaining_days}
         self.national_code = ""
         self.is_valid = False
 
+    def calculate_remaining_days(self):
+        if self.is_valid:
+            birthday = self.get_birthday()
+            if not birthday:
+                print("The employee not found")
+                return
+            days_to_birthday = self.get_num_of_days(birthday)
+            print(f"There are {days_to_birthday} days to his/her birthday")
+            input("Press any key to continue...")
+            return True
+        else:
+            print('Cannot find employee, please re-enter national code')
+
     def get_national_code(self):
-        print("Enter national_code")
-        national_code = str(input("national_code: "))
+        national_code = str(input("National Code: "))
         self.national_code = national_code
 
-    def validate_birthday(self):
+    def validate(self):
         valid, error = NationalCodeValidator.validate(self.national_code)
         if valid:
             self.is_valid = True
@@ -318,17 +310,32 @@ class Birthday:
     def get_birthday(self):
         employee = Employee.search_national_code(self.national_code)
         if employee:
-            birthday = datetime.datetime.strptime(employee.birthday, "%Y%m%d")
+            birthday = datetime.datetime.strptime(employee[0].birthday, "%Y-%m-%d")
             return birthday
 
-    # def get_num_of_days(self, birthday):
-    #     now = datetime.datetime.now()
-    #     birthday = datetime(now.year,birthday.month)
-    #
-    #     return (date1-date2).days
+    @staticmethod
+    def get_num_of_days(birthday):
+        now = datetime.datetime.now()
+        birthday = datetime.datetime(now.year, birthday.month, birthday.day)
+        if now > birthday:
+            birthday = datetime.datetime(birthday.year + 1, birthday.month, birthday.day)
+        return (birthday - now).days
 
+    @staticmethod
+    def show_menu():
+        print("1- Calculate Birthday Remaining Days")
+        print("2- Re-enter National Code")
+        print("3- Cancel")
 
-
-
-
-
+    def show(self):
+        while True:
+            self.get_national_code()
+            self.validate()
+            self.show_menu()
+            choice = int(input("enter your choice [1-3]: "))
+            func = self.menu.get(choice)
+            if choice == len(self.menu) + 2:
+                return
+            if func:
+                if func():
+                    return
