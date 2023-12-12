@@ -25,11 +25,29 @@ class Employee(Model):
         db.close()
         return rows
 
-    @staticmethod
-    def search(**kwargs):
-        rows = Employee.select().where()
+    # @staticmethod
+    # def search(**kwargs):
+    #     rows = Employee.select().where()
 
     @staticmethod
     def add(first_name, last_name, birthday, national_code):
-        empolyee = Employee(first_name=first_name, last_name=last_name, birthday=birthday, national_code= national_code)
-        return empolyee.save()
+        employee = Employee(first_name=first_name, last_name=last_name, birthday=birthday, national_code=national_code)
+        return employee.save()
+
+    @staticmethod
+    def search_national_code(national_code):
+        employee = Employee.select().where(Employee.national_code == national_code)
+        if employee:
+            return employee
+    @staticmethod
+    def search_name(first_name):
+        employee = Employee.select().where(Employee.first_name % first_name)
+        if employee:
+            return employee
+
+
+def delete_by_national_code(national_code):
+    if Employee.search_national_code(national_code=national_code):
+        q = Employee.delete().where(Employee.national_code == national_code)
+        q.execute()
+        return True

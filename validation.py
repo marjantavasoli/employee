@@ -1,5 +1,8 @@
 import abc
+import datetime
 import re
+import _strptime
+import time
 
 
 class Validator(abc.ABC):
@@ -14,7 +17,7 @@ class NameValidator(Validator):
 
     @classmethod
     def validate(cls, value) -> (bool, str):
-        value = value.strip(" ")
+        value = value.replace(" ", "")
         if value == "":
             return False, "it is required"
         match = re.fullmatch("[a-zA-Z ]*", value)
@@ -27,16 +30,15 @@ class BirthdayValidator(Validator):
 
     @classmethod
     def validate(cls, value) -> (bool, str):
-        value = value.strip(" ")
-        if value == "":
-            return False, "it is required"
-        if len(value) == 8 and re.fullmatch("^\d{4}\d{2}\d{2}$", value):
-            if value[:4:] < '2023' and value[5:6] < str(12) and value[7::] < str(31):
-                return True, ""
-            else:
-                return False, "Please enter valid date"
+        try:
+            value = value.replace("-", "").replace("/", "").replace(" ", "")
+            if value == "":
+                return False, "it is required"
+            value = datetime.datetime.strptime(value, "%Y%m%d")
+            return True, ""
 
-        return False, "Please enter only number"
+        except ValueError:
+            return False, "Please enter valid date"
 
 
 class NationalCodeValidator(Validator):
@@ -45,7 +47,7 @@ class NationalCodeValidator(Validator):
         value = value.strip(" ")
         if value == "":
             return False, "it is required."
-        if len(value) == 10 and re.fullmatch("\d{10}"):
+        if len(value) == 10 and re.fullmatch("\d{10}",value):
             return True, ""
         return False, "Please enter only number"
 
