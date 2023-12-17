@@ -60,7 +60,8 @@ class MainMenu:
         add_employee.show()
         input("Press any key to continue...")
 
-    def remind_birthday(self):
+    @staticmethod
+    def remind_birthday():
         birthday_menu = BirthdayMenu()
         birthday_menu.show()
 
@@ -92,15 +93,15 @@ class AddEmployeeMenu:
         self.menu = {
             1: self.submit
         }
-        self.model = self.ModelSample('', '', '', '', False)
+        self.model_sample = self.ModelSample('', '', '', '', False)
 
     def get_employee_data(self):
         print("Please Enter Employee Information:")
-        first_name = self.get_employee_field(self.model.first_name, 'first name')
-        last_name = self.get_employee_field(self.model.last_name, 'last name')
-        birthday = self.get_employee_field(self.model.birthday, 'birthday(like:2023-01-30)')
-        national_code = self.get_employee_field(self.model.national_code, 'national_code')
-        self.model = self.ModelSample(first_name, last_name, birthday, national_code, False)
+        first_name = self.get_employee_field(self.model_sample.first_name, 'first name')
+        last_name = self.get_employee_field(self.model_sample.last_name, 'last name')
+        birthday = self.get_employee_field(self.model_sample.birthday, 'birthday(like:2023-01-30)')
+        national_code = self.get_employee_field(self.model_sample.national_code, 'national_code')
+        self.model_sample = self.ModelSample(first_name, last_name, birthday, national_code, False)
 
     @staticmethod
     def get_employee_field(model_field, model_field_name):
@@ -110,13 +111,13 @@ class AddEmployeeMenu:
         return field
 
     def submit(self):
-        if not self.model.is_valid:
+        if not self.model_sample.is_valid:
             print('Cannot add to database, please re-enter information')
             return
-        result = Employee.add(first_name=self.model.first_name,
-                              last_name=self.model.last_name,
-                              birthday=self.model.birthday,
-                              national_code=self.model.national_code)
+        result = Employee.add(first_name=self.model_sample.first_name,
+                              last_name=self.model_sample.last_name,
+                              birthday=self.model_sample.birthday,
+                              national_code=self.model_sample.national_code)
         # TODO validate result later
         print("Successfully added.")
         return True
@@ -129,24 +130,24 @@ class AddEmployeeMenu:
 
     def validate(self):
         errors = {}
-        valid, error = NameValidator.validate(self.model.first_name)
+        valid, error = NameValidator.validate(self.model_sample.first_name)
         if not valid:
             errors['first_name'] = error
-        valid, error = NameValidator.validate(self.model.last_name)
+        valid, error = NameValidator.validate(self.model_sample.last_name)
         if not valid:
             errors['last_name'] = error
 
-        valid, error = BirthdayValidator.validate(self.model.birthday)
+        valid, error = BirthdayValidator.validate(self.model_sample.birthday)
         if not valid:
             errors['birthday'] = error
 
-        valid, error = NationalCodeValidator.validate(self.model.national_code)
+        valid, error = NationalCodeValidator.validate(self.model_sample.national_code)
         if not valid:
             errors['national_code'] = error
 
         for field, error in errors.items():
             print(f'Validation Error, {field}: {error}')
-        self.model = self.model._replace(is_valid=not bool(errors))
+        self.model_sample = self.model_sample._replace(is_valid=not bool(errors))
 
     def show(self):
         while True:
@@ -178,7 +179,7 @@ class SearchEmployeeMenu:
             employees = Employee.search_name(first_name)
             MainMenu.print_employees(employees)
         else:
-            print(error)
+            print(f"error: {error}")
         input("Press any key to continue...")
         return True
 
@@ -189,7 +190,7 @@ class SearchEmployeeMenu:
             employees = Employee.search_national_code(national_code)
             MainMenu.print_employees(employees)
         else:
-            print(error)
+            print(f"error: {error}")
         input("Press any key to continue...")
         return True
 
@@ -305,7 +306,7 @@ class BirthdayMenu:
         if valid:
             self.is_valid = True
         else:
-            print(error)
+            print(f"error: {error}")
 
     def get_birthday(self):
         employee = Employee.search_national_code(self.national_code)
