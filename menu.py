@@ -22,17 +22,12 @@ class MainMenu:
             2: self.search_employee,
             3: self.add_employee,
             4: self.remind_birthday,
-            5: self.delete_employee}
+            5: self.delete_employee,
+            6: self.update_employee}
 
     @staticmethod
     def show_menu():
-        print("Menu:")
-        print("1. show")
-        print("2. search")
-        print("3. add")
-        print("4. birthday")
-        print("5. delete")
-        print("6. exit")
+        print("Menu:\n1. show\n2. search\n3. add\n4. birthday\n5. delete\n6. update\n7. exit")
 
     def show_employee(self):
         result = Employee.get_all()
@@ -46,8 +41,10 @@ class MainMenu:
             for row in employees:
                 my_table.add_row([row.first_name, row.last_name, row.birthday, row.national_code])
             print(my_table)
+            print('*' * 30)
         else:
             print("does not exist")
+            print('*' * 30)
 
     @staticmethod
     def search_employee():
@@ -71,19 +68,30 @@ class MainMenu:
         delete_employee.show()
         # input("Press any key to continue")
 
+    @staticmethod
+    def update_employee():
+        update_employee = UpdateEmployeeMenu()
+        update_employee.show()
+
     def show(self):
-        while True:
-            # clear()
-            self.show_menu()
-            choice = int(input("Enter your choice (1-5): "))
-            if choice == len(self.menu) + 1:
-                print("bye")
-                break
-            func = self.menu.get(choice)
-            if func:
-                func()
-            else:
-                print("Invalid choice.")
+        try:
+            while True:
+                # clear()
+                self.show_menu()
+                choice = int(input("Enter your choice (1-5): "))
+                print('*' * 30)
+                if choice == len(self.menu) + 1:
+                    print("bye")
+                    break
+                func = self.menu.get(choice)
+                if func:
+                    func()
+                else:
+                    print("Invalid choice.")
+                    print('*' * 30)
+        except ValueError:
+            print("Please enter only number")
+            print('*' * 30)
 
 
 class AddEmployeeMenu:
@@ -124,9 +132,7 @@ class AddEmployeeMenu:
 
     @staticmethod
     def show_menu():
-        print("1 - Submit")
-        print("2 - Re-enter Information")
-        print("3 - Cancel")
+        print("1 - Submit\n2 - Re-enter Information\n3 - Cancel")
 
     def validate(self):
         errors = {}
@@ -150,17 +156,22 @@ class AddEmployeeMenu:
         self.model_sample = self.model_sample._replace(is_valid=not bool(errors))
 
     def show(self):
-        while True:
-            self.get_employee_data()
-            self.validate()
-            self.show_menu()
-            choice = int(input("enter your choice [1-3]: "))
-            func = self.menu.get(choice)
-            if choice == len(self.menu) + 2:
-                return
-            if func:
-                if func():
+        try:
+            while True:
+                self.get_employee_data()
+                self.validate()
+                self.show_menu()
+                choice = int(input("enter your choice [1-3]: "))
+                print('*' * 30)
+                func = self.menu.get(choice)
+                if choice == len(self.menu) + 2:
                     return
+                if func:
+                    if func():
+                        return
+        except ValueError:
+            print("Please enter only number")
+            print('*' * 30)
 
 
 class SearchEmployeeMenu:
@@ -177,21 +188,25 @@ class SearchEmployeeMenu:
         valid, error = self.validate_first_name(first_name)
         if valid:
             employees = Employee.search_name(first_name)
-            MainMenu.print_employees(employees)
+            MainMenu.print_employees([employees])
         else:
             print(f"error: {error}")
+            print('*' * 30)
         input("Press any key to continue...")
+        print('*' * 30)
         return True
 
     def search_by_national_code(self):
         national_code = str(input("National Code: "))
         valid, error = self.validate_national_code(national_code)
         if valid:
-            employees = Employee.search_national_code(national_code)
+            employees = Employee.get_by_national_code(national_code)
             MainMenu.print_employees(employees)
         else:
             print(f"error: {error}")
+            print('*' * 30)
         input("Press any key to continue...")
+        print('*' * 30)
         return True
 
     @staticmethod
@@ -212,20 +227,24 @@ class SearchEmployeeMenu:
 
     @staticmethod
     def show_menu():
-        print("1- Search By Name")
-        print("2- Search By National Code")
-        print("3- Cancel")
+        print("1- Search By Name\n2- Search By National Code\n3- Cancel")
+        print('*' * 30)
 
     def show(self):
-        while True:
-            self.show_menu()
-            choice = int(input("enter your choice [1-3]: "))
-            func = self.menu.get(choice)
-            if choice == len(self.menu) + 1:
-                return
-            if func:
-                if func():
+        try:
+            while True:
+                self.show_menu()
+                choice = int(input("enter your choice [1-3]: "))
+                print('*' * 30)
+                func = self.menu.get(choice)
+                if choice == len(self.menu) + 1:
                     return
+                if func:
+                    if func():
+                        return
+        except ValueError:
+            print("please enter only number")
+            print('*' * 30)
 
 
 class DeleteEmployeeMenu:
@@ -242,16 +261,18 @@ class DeleteEmployeeMenu:
             if choice.lower() in ("yes" or "y"):
                 if Employee.delete_by_national_code(self.national_code):
                     print("Successfully deleted.")
+                    print('*' * 30)
                 else:
                     print("does not exist.")
+                    print('*' * 30)
         else:
             print('Cannot delete from database, please re-enter national code')
+            print('*' * 30)
 
     @staticmethod
     def show_menu():
-        print("1- Delete Employee")
-        print("2- Re-enter National Code")
-        print("3- Cancel")
+        print("1- Delete Employee\n2- Re-enter National Code\n3- Cancel")
+        print('*' * 30)
 
     def get_national_code(self):
         national_code = str(input("National Code: "))
@@ -263,19 +284,24 @@ class DeleteEmployeeMenu:
             self.is_valid = True
         else:
             print(f"error = {error}")
+            print('*' * 30)
 
     def show(self):
-        while True:
-            self.get_national_code()
-            self.validate()
-            self.show_menu()
-            choice = int(input("enter your choice [1-3]: "))
-            func = self.menu.get(choice)
-            if choice == len(self.menu) + 2:
-                return
-            if func:
-                func()
-                return
+        try:
+            while True:
+                self.get_national_code()
+                self.validate()
+                self.show_menu()
+                choice = int(input("enter your choice [1-3]: "))
+                func = self.menu.get(choice)
+                if choice == len(self.menu) + 2:
+                    return
+                if func:
+                    func()
+                    return
+        except ValueError:
+            print("Please enter only number")
+            print('*' * 30)
 
 
 class BirthdayMenu:
@@ -289,9 +315,11 @@ class BirthdayMenu:
             birthday = self.get_birthday()
             if not birthday:
                 print("The employee not found")
+                print('*' * 30)
                 return
             days_to_birthday = self.get_num_of_days(birthday)
             print(f"There are {days_to_birthday} days to his/her birthday")
+            print('*' * 30)
             input("Press any key to continue...")
             return True
         else:
@@ -309,7 +337,7 @@ class BirthdayMenu:
             print(f"error: {error}")
 
     def get_birthday(self):
-        employee = Employee.search_national_code(self.national_code)
+        employee = Employee.get_by_national_code(self.national_code)
         if employee:
             birthday = datetime.datetime.strptime(employee[0].birthday, "%Y-%m-%d")
             return birthday
@@ -324,19 +352,120 @@ class BirthdayMenu:
 
     @staticmethod
     def show_menu():
-        print("1- Calculate Birthday Remaining Days")
-        print("2- Re-enter National Code")
-        print("3- Cancel")
+        print("1- Calculate Birthday Remaining Days\n2- Re-enter National Code\n3- Cancel")
 
     def show(self):
-        while True:
-            self.get_national_code()
-            self.validate()
-            self.show_menu()
-            choice = int(input("enter your choice [1-3]: "))
-            func = self.menu.get(choice)
-            if choice == len(self.menu) + 2:
-                return
-            if func:
-                if func():
+        try:
+            while True:
+                self.get_national_code()
+                self.validate()
+                self.show_menu()
+                choice = int(input("enter your choice [1-3]: "))
+                func = self.menu.get(choice)
+                if choice == len(self.menu) + 2:
                     return
+                if func:
+                    if func():
+                        return
+        except ValueError:
+            print("please enter only number")
+            print('*'*30)
+
+
+class UpdateEmployeeMenu(AddEmployeeMenu):
+
+    def __init__(self):
+        super().__init__()
+        # self.national_code = ""
+        self.is_valid=False
+        self.valid_national_code = False
+
+    @staticmethod
+    def get_national_code():
+        national_code = str(input("National Code: "))
+        return national_code
+
+    def set_model_sample(self,employee):
+        self.model_sample = self.ModelSample(employee.first_name,
+                                                 employee.last_name,
+                                                 employee.national_code,
+                                                 employee.birthday)
+
+    def validate_national_code(self,national_code):
+        valid, error = NationalCodeValidator.validate(national_code)
+        if valid:
+            self.valid_national_code = True
+        else:
+            print(f"error = {error}")
+            print('*' * 30)
+            return
+
+    def get_employee(self, national_code):
+        employee = Employee.get_by_national_code(national_code)
+        if employee:
+            return employee
+
+
+
+
+    def submit(self):
+        if not self.is_valid:
+            print('Cannot add to database, please re-enter information')
+            return
+        else:
+            employee = self.get_employee_by_national_code(self.national_code)
+            if employee:
+                Employee.update_by_info(first_name=self.model_sample.first_name,
+                                        last_name=self.model_sample.last_name,
+                                        national_code=self.model_sample.national_code,
+                                        birthday=self.model_sample.birthday)
+            else:
+                print("There is not employee with this national_code")
+
+    def show(self):
+        try:
+            while True:
+                nc = self.get_national_code()
+                self.validate_national_code(nc)
+                if self.valid_national_code:
+                    employee = self.get_employee(nc)
+                    if employee:
+                        self.set_model_sample(employee)
+                        self.get_employee_data()
+                        self.validate()
+                        if self.is_valid:
+                            self.show_menu()
+                            choice = int(input("enter your choice [1-3]: "))
+                            print('*' * 30)
+                            func = self.menu.get(choice)
+                            if choice == len(self.menu) + 2:
+                                return
+                            if func:
+                                if func():
+                                    return
+
+
+
+                if self.valid_national_code:
+                    self.get_employee_data()
+                    self.validate()
+                    self.show_menu()
+                    choice = int(input("enter your choice [1-3]: "))
+                    func = self.menu.get(choice)
+                    if choice == len(self.menu) + 2:
+                        break
+                    if func:
+                        func()
+                        break
+                else:
+                    print("Please enter valid national")
+                    continue
+        except ValueError:
+            print("Please enter only number")
+
+
+
+
+
+
+
