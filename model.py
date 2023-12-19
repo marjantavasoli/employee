@@ -17,11 +17,11 @@ class Employee(Model):
 # Employee.create_table()
     @staticmethod
     def get_all():
-        '''
-        :return:ModelSelect
-        '''
         rows = Employee.select()
-
+        # for row in rows:
+        #     print("first_name: {} last_name: {} birthday: {} national_code:{}".format(row.first_name, row.last_name,
+        #                                                                               row.birthday,
+        #                                                                               row.national_code))
         db.close()
         return rows
 
@@ -52,6 +52,3 @@ class Employee(Model):
             q = Employee.delete().where(Employee.national_code == national_code)
             q.execute()
             return True
-
-
-Employee.create_table()
