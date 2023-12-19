@@ -200,12 +200,12 @@ class SearchEmployeeMenu:
         national_code = str(input("National Code: "))
         valid, error = self.validate_national_code(national_code)
         if valid:
-            employees = Employee.get_by_national_code(national_code)
+            employees = Employee.get_by_national_code1(national_code)
             MainMenu.print_employees(employees)
         else:
             print(f"error: {error}")
             print('*' * 30)
-        input("Press any key to continue...")
+        input("Press any key to continue...")  #TODO a static method pause execution
         print('*' * 30)
         return True
 
@@ -337,7 +337,7 @@ class BirthdayMenu:
             print(f"error: {error}")
 
     def get_birthday(self):
-        employee = Employee.get_by_national_code(self.national_code)
+        employee = Employee.get_by_national_code1(self.national_code)
         if employee:
             birthday = datetime.datetime.strptime(employee[0].birthday, "%Y-%m-%d")
             return birthday
@@ -375,93 +375,83 @@ class BirthdayMenu:
 class UpdateEmployeeMenu(AddEmployeeMenu):
 
     def __init__(self):
-        super().__init__()
+        self.menu = {1: self.submit}
         # self.national_code = ""
-        self.is_valid=False
-        self.valid_national_code = False
+        self.is_valid = False
+        # self.valid_national_code = False
 
     @staticmethod
     def get_national_code():
         national_code = str(input("National Code: "))
         return national_code
 
-    def set_model_sample(self,employee):
-        self.model_sample = self.ModelSample(employee.first_name,
-                                                 employee.last_name,
-                                                 employee.national_code,
-                                                 employee.birthday)
+    def set_model_sample(self, employee):
+        employee = employee
+        self.model_sample = self.ModelSample(first_name=employee.first_name,
+                                             last_name=employee.last_name,
+                                             national_code=employee.national_code,
+                                             birthday=employee.birthday,
+                                             is_valid=True)
 
-    def validate_national_code(self,national_code):
+    def validate_national_code(self, national_code):
         valid, error = NationalCodeValidator.validate(national_code)
-        if valid:
-            self.valid_national_code = True
-        else:
+        if not valid:
             print(f"error = {error}")
             print('*' * 30)
-            return
+        return valid
 
-    def get_employee(self, national_code):
-        employee = Employee.get_by_national_code(national_code)
-        if employee:
-            return employee
+    # def get_employee(self, national_code):
+    #     employee = Employee.get_by_national_code(national_code)
+    #     if employee:
+    #         return employee
 
-
-
-
-    def submit(self):
-        if not self.is_valid:
-            print('Cannot add to database, please re-enter information')
-            return
-        else:
-            employee = self.get_employee_by_national_code(self.national_code)
-            if employee:
-                Employee.update_by_info(first_name=self.model_sample.first_name,
-                                        last_name=self.model_sample.last_name,
-                                        national_code=self.model_sample.national_code,
-                                        birthday=self.model_sample.birthday)
-            else:
-                print("There is not employee with this national_code")
+    # def submit(self, employee):
+    #     if not self.model_sample.is_valid:
+    #         print('Cannot add to database, please re-enter information')
+    #         return
+    #     else:
+    #         employee.update_by_info(first_name=self.model_sample.first_name,
+    #                                 last_name=self.model_sample.last_name,
+    #                                 national_code=self.model_sample.national_code,
+    #                                 birthday=self.model_sample.birthday)
+    #         print('Successfully updated')
+    #         input("Press any key to continue...")
+    #         return True
+    @staticmethod
+    def show_menu():
+        print("1 - Update\n2 - Re-enter Information\n3 - Cancel")
 
     def show(self):
         try:
             while True:
-                nc = self.get_national_code()
-                self.validate_national_code(nc)
-                if self.valid_national_code:
-                    employee = self.get_employee(nc)
-                    if employee:
+                national_code = self.get_national_code()
+                is_valid_national_code = self.validate_national_code(national_code)
+                if is_valid_national_code:
+                    employee = Employee.get_by_national_code(national_code)
+                    if employee :
                         self.set_model_sample(employee)
                         self.get_employee_data()
                         self.validate()
-                        if self.is_valid:
-                            self.show_menu()
-                            choice = int(input("enter your choice [1-3]: "))
-                            print('*' * 30)
-                            func = self.menu.get(choice)
-                            if choice == len(self.menu) + 2:
+                        self.show_menu()
+                        choice = int(input("enter your choice [1-3]: "))
+                        print('*' * 30)
+                        func = self.menu.get(choice)
+                        if choice == len(self.menu) + 2:
+                            return
+                        if choice == 1:
+                            if func(employee):
                                 return
-                            if func:
-                                if func():
-                                    return
-
-
-
-                if self.valid_national_code:
-                    self.get_employee_data()
-                    self.validate()
-                    self.show_menu()
-                    choice = int(input("enter your choice [1-3]: "))
-                    func = self.menu.get(choice)
-                    if choice == len(self.menu) + 2:
-                        break
-                    if func:
-                        func()
-                        break
+                    else:
+                        print('This employee does not exist')
+                        input("Press any key to continue...")
+                        return
                 else:
-                    print("Please enter valid national")
-                    continue
+                    input("Press any key to continue...")
+                    return
+
         except ValueError:
-            print("Please enter only number")
+            print("Please enter only valid number")
+            return
 
 
 

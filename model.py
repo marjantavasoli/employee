@@ -39,7 +39,7 @@ class Employee(Model):
 
     @staticmethod
     def get_by_national_code(national_code):
-        employee = Employee.get_or_none(Employee.national_code == national_code)
+        employee = Employee.select().where(Employee.national_code==national_code).first()
         return employee
 
     @staticmethod
@@ -57,7 +57,7 @@ class Employee(Model):
     def update_by_info(self, first_name=None, last_name=None, national_code=None, birthday=None):
         if first_name is not None:
             self.first_name = first_name
-        if last_name is not  None:
+        if last_name is not None:
             self.last_name = last_name
         if national_code is not None:
             self.national_code = national_code
