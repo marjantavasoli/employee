@@ -375,6 +375,7 @@ class BirthdayMenu:
 class UpdateEmployeeMenu(AddEmployeeMenu):
 
     def __init__(self):
+        super().__init__()
         self.menu = {1: self.submit}
         # self.national_code = ""
         self.is_valid = False
@@ -405,18 +406,19 @@ class UpdateEmployeeMenu(AddEmployeeMenu):
     #     if employee:
     #         return employee
 
-    # def submit(self, employee):
-    #     if not self.model_sample.is_valid:
-    #         print('Cannot add to database, please re-enter information')
-    #         return
-    #     else:
-    #         employee.update_by_info(first_name=self.model_sample.first_name,
-    #                                 last_name=self.model_sample.last_name,
-    #                                 national_code=self.model_sample.national_code,
-    #                                 birthday=self.model_sample.birthday)
-    #         print('Successfully updated')
-    #         input("Press any key to continue...")
-    #         return True
+    def submit(self, employee=None):
+        if not self.model_sample.is_valid:
+            print('Cannot add to database, please re-enter information')
+            return
+        else:
+            employee.update_by_info(first_name=self.model_sample.first_name,
+                                    last_name=self.model_sample.last_name,
+                                    national_code=self.model_sample.national_code,
+                                    birthday=self.model_sample.birthday)
+            print('Successfully updated')
+            input("Press any key to continue...")
+            return True
+
     @staticmethod
     def show_menu():
         print("1 - Update\n2 - Re-enter Information\n3 - Cancel")
