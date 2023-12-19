@@ -17,6 +17,9 @@ class Employee(Model):
 # Employee.create_table()
     @staticmethod
     def get_all():
+        '''
+        :return:ModelSelect
+        '''
         rows = Employee.select()
         # for row in rows:
         #     print("first_name: {} last_name: {} birthday: {} national_code:{}".format(row.first_name, row.last_name,
@@ -35,20 +38,32 @@ class Employee(Model):
         return employee.save()
 
     @staticmethod
-    def search_national_code(national_code):
-        employee = Employee.select().where(Employee.national_code == national_code)
-        if employee:
-            return employee
+    def get_by_national_code(national_code):
+        employee = Employee.get_or_none(Employee.national_code == national_code)
+        return employee
 
     @staticmethod
     def search_name(first_name):
-        employee = Employee.select().where(Employee.first_name.contains(first_name))
-        if employee:
-            return employee
+        employee = Employee.select().where(Employee.first_name.startswith(first_name))
+        return employee
 
     @staticmethod
     def delete_by_national_code(national_code):
-        if Employee.search_national_code(national_code=national_code):
+        if Employee.get_by_national_code(national_code=national_code):
             q = Employee.delete().where(Employee.national_code == national_code)
             q.execute()
             return True
+
+    def update_by_info(self, first_name=None, last_name=None, national_code=None, birthday=None):
+        if first_name is not None:
+            self.first_name = first_name
+        if last_name is not  None:
+            self.last_name = last_name
+        if national_code is not None:
+            self.national_code = national_code
+        if birthday is not None:
+            self.birthday = birthday
+        self.save()
+
+
+Employee.create_table()
