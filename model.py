@@ -5,16 +5,19 @@ db = SqliteDatabase("employee.sqlite")
 
 
 class Employee(Model):
-    first_name = TextField(null=False)
-    last_name = TextField(null=False)
-    birthday = DateField(formats=['%Y%m%d'], null=False)
-    national_code = TextField(unique=True, null=False)
+    first_name = TextField(null=False, verbose_name="First Name")
+    last_name = TextField(null=False, verbose_name="Last Name")
+    birthday = DateField(formats=['%Y%m%d'], null=False, verbose_name="Birthday")
+    national_code = TextField(unique=True, null=False, verbose_name="National Code")
 
     class Meta:
         database = db
         db_table = "Employee"
 
-# Employee.create_table()
+    @classmethod
+    def get_all_field_names(cls):
+        return [field.verbose_name for field in cls._meta.sorted_fields if field.verbose_name is not None]
+
     @staticmethod
     def get_all():
         '''
