@@ -7,6 +7,7 @@ from os import system, name
 from model import *
 from collections import namedtuple
 from validation import *
+import common
 
 
 def clear():
@@ -30,8 +31,8 @@ class MainMenu:
         print("Menu:\n1. show\n2. search\n3. add\n4. birthday\n5. delete\n6. update\n7. exit")
 
     def show_employee(self):
-        result = Employee.get_all()
-        self.print_employees(result)
+        common.print_employees(Employee.get_all(), Employee.get_all_field_names())
+        print('*' * 30)
         input("Press any key to continue...")
 
     @staticmethod
