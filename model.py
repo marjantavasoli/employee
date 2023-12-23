@@ -39,7 +39,7 @@ class Employee(Model):
 
     @staticmethod
     def get_by_national_code(national_code):
-        employee = Employee.select().where(Employee.national_code==national_code).first()
+        employee = Employee.select().where(Employee.national_code == national_code)
         return employee
 
     @staticmethod
@@ -54,16 +54,16 @@ class Employee(Model):
             q.execute()
             return True
 
-    def update_by_info(self, first_name=None, last_name=None, national_code=None, birthday=None):
-        if first_name is not None:
-            self.first_name = first_name
-        if last_name is not None:
-            self.last_name = last_name
-        if national_code is not None:
-            self.national_code = national_code
-        if birthday is not None:
-            self.birthday = birthday
-        self.save()
+    # def update_by_info(self, first_name=None, last_name=None, national_code=None, birthday=None):
+    #     if first_name is not None:
+    #         self.first_name = first_name
+    #     if last_name is not None:
+    #         self.last_name = last_name
+    #     if national_code is not None:
+    #         self.national_code = national_code
+    #     if birthday is not None:
+    #         self.birthday = birthday
+    #     self.save()
 
 
 Employee.create_table()

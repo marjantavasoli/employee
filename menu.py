@@ -1,7 +1,7 @@
 import datetime
 from datetime import date
 
-import model
+
 from prettytable import PrettyTable
 from os import system, name
 from model import *
