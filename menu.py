@@ -431,7 +431,7 @@ class UpdateEmployeeMenu(AddEmployeeMenu):
                 is_valid_national_code = self.validate_national_code(national_code)
                 if is_valid_national_code:
                     employee = Employee.get_by_national_code(national_code)
-                    if employee :
+                    if employee:
                         self.set_model_sample(employee)
                         self.get_employee_data()
                         self.validate()
