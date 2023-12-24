@@ -44,12 +44,12 @@ class BirthdayValidator(Validator):
 class NationalCodeValidator(Validator):
     @classmethod
     def validate(cls, value) -> (bool, str):
-        value = value.strip(" ")
+        # value = value.replace(" ", "")
         if value == "":
             return False, "it is required."
         if len(value) == 10 and re.fullmatch("\d{10}",value):
             return True, ""
-        return False, "Please enter only number"
+        return False, "Please enter a valid national code"
 
 
 
